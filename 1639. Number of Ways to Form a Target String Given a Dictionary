@@ -1,0 +1,44 @@
+https://leetcode.com/problems/number-of-ways-to-form-a-target-string-given-a-dictionary/description/
+
+class Solution {
+public:
+    int m, n;
+    int MOD=1e9+7;
+    int f(int i, int j, string &target, vector<vector<int>>& dp, vector<vector<int>>& freq) {
+        if (i>=m ) return 0; 
+        if (j == n - 1) { 
+            int char_no = target[j] - 'a';
+            int ans=0;
+            for(int x=i;x<m;x++){
+                ans+=freq[char_no][x];
+            }
+            return ans;
+        }
+        if (dp[i][j] != -1) return dp[i][j];
+        int char_no = target[j] - 'a';
+        int take = 0;
+        if (freq[char_no][i] > 0) {
+            take = (freq[char_no][i]* 1ll * f(i + 1, j + 1, target, dp, freq))%MOD;
+        }
+        int not_take = f(i + 1, j, target, dp, freq);
+
+        dp[i][j] = (take + not_take*1ll)%MOD;
+        return dp[i][j];
+    }
+
+    int numWays(vector<string>& words, string target) {
+        n = target.size();
+        m = words[0].size();
+        vector<vector<int>> freq(26, vector<int>(m, 0)); 
+        vector<vector<int>> dp(m, vector<int>(n, -1));  
+
+        for (int i = 0; i < words.size(); i++) {
+            for (int j = 0; j < words[i].size(); j++) {
+                int t = words[i][j] - 'a';
+                freq[t][j]++;
+            }
+        }
+       int x=f(0,0,target,dp,freq);
+        return x;
+    }
+};
